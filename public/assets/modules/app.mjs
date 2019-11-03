@@ -1,6 +1,7 @@
 import { User, getUsers, createUser } from "./user.mjs";
-import { Setting, createSetting } from "./setting.mjs";
-import { getSettings } from "./setting.mjs";
+import { Setting, createSetting, getSettings } from "./setting.mjs";
+import { Plan, getPlans, createPlan } from "./plan.mjs";
+import { deletePlan } from "./plan.mjs";
 
 let start = async function () {
 
@@ -28,6 +29,20 @@ let start = async function () {
         let newSetting = new Setting("sid1", "interval", { "label": "Exercise interval", "duration": 30 });
         let addSetRes = await createSetting(newSetting);
         alert("New setting created: " + addSetRes);
+    }
+
+    // Create new plan if not yet created
+    let allPlans = await getPlans();
+    if (allPlans && allPlans.length > 0) {
+        alert("Found " + allPlans.length + " existing plans");
+        console.log("Plans : ", allPlans);
+        
+        let delRes = await deletePlan("neck-exercise-1");
+        alert("Plan delete result : " + delRes);
+    } else {
+        let newPlan = new Plan("neck-exercise-1", "neck-exercise-1", new Date()+10000,{ setsRequired: 10 }, {setsCompleted: 0 });
+        let addPlanRes = await createPlan(newPlan);
+        alert("New Plan created: " + addPlanRes);
     }
 
 

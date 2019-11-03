@@ -37,7 +37,8 @@ export async function getDB() {
             // Declare tables, IDs and indexes
             db.version(DBVERSION).stores({
                 users: 'id, nickname, logoid, createdOn, updatedOn, version',
-                settings: 'id, name, value, createdOn, updatedOn, version'
+                settings: 'id, name, value, createdOn, updatedOn, version',
+                plans: 'id, name, startTime, constants, variables, createdOn, updatedOn, version'
             });
         }
 
