@@ -38,7 +38,8 @@ export async function getDB() {
             db.version(DBVERSION).stores({
                 users: 'id, nickname, logoid, createdOn, updatedOn, version',
                 settings: 'id, name, value, createdOn, updatedOn, version',
-                plans: 'id, name, startTime, constants, variables, createdOn, updatedOn, version'
+                plans: 'id, name, startTime, constants, variables, createdOn, updatedOn, version',
+                exercises: 'id, name, startTime, endTime, tags, currentState, constants, variables, progress, createdOn, updatedOn, version'
             });
         }
 

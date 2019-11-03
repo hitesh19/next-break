@@ -43,7 +43,7 @@ export async function createSetting(setting) {
 export async function updateSetting(setting) {
     let db = await getDB();
     let now = new Date();
-    let addResult = await db.settings.put({
+    let updateRes = await db.settings.put({
         id: setting.id,
         name: setting.name,
         value: setting.value,
@@ -51,7 +51,7 @@ export async function updateSetting(setting) {
         updatedOn: now,
         version: DBVERSION
     }, setting.id);
-    return addResult;
+    return updateRes;
 }
 
 /**

@@ -4,7 +4,7 @@ export class Plan {
     constructor(id, name, startTime, constants, variables, createdOn, updatedOn, version) {
         this.id = id;
         this.name = name;
-        this.startTime = startTime;
+        this.startTime = !startTime || startTime == null ? null :  new Date(startTime);
         this.constants = constants;
         this.variables = variables;
         this.createdOn = createdOn;
