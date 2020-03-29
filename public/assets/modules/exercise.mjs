@@ -72,7 +72,7 @@ export async function getExercises(startTimeAfter, startTimeBefore) {
         }
 
         if (stB != null) {
-            if (new Date(ob.startTime) > stB) {
+            if (new Date(ob.startTime) >= stB) {
                 retVal = false;
             }
         }
