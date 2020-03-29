@@ -13,7 +13,7 @@ let db = undefined;
  * Returns true if IndexedDB feature  is implemented in the browser
  */
 function checkDB() {
-    if (!window.indexedDB) {
+    if (!self.indexedDB) {
         console.error();
         return false;
     } else {

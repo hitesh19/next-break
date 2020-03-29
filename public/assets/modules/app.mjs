@@ -1,6 +1,5 @@
 import { User, getUsers, createUser } from "./user.mjs";
 import { Setting, createSetting, getSettings } from "./setting.mjs";
-import { Plan, getPlans, createPlan, deletePlan } from "./plan.mjs";
 import {
     Exercise,
     createExercise,
@@ -8,6 +7,8 @@ import {
     deleteExerciseStartedBefore,
     updateExercise
 } from "./exercise.mjs";
+
+const SCHEDULERSRCPATH = "assets/js/scheduler.mjs";
 
 let start = async function () {
 
@@ -39,22 +40,19 @@ let start = async function () {
         alert("New setting created: " + addSetRes);
     }
 
-    // Create new plan if not yet created
-    let allPlans = await getPlans();
-    if (allPlans && allPlans.length > 0) {
-        alert("Found " + allPlans.length + " existing plans");
-        console.log("Plans : ", allPlans);
 
-        let delRes = await deletePlan("neck-exercise-1");
-        alert("Plan delete result : " + delRes);
+    // Create the Scheduler web worker
+    if(typeof(Worker) !== "undefined") {
+        if(typeof(obj) == "undefined") {
+            new Worker(SCHEDULERSRCPATH, {
+                type: 'module'
+            });
+        }
     } else {
-        let newPlan = new Plan("neck-exercise-1",
-            "neck-exercise-1",
-            new Date(new Date().getTime() + 10000).toISOString(),
-            { setsRequired: 10 },
-            { setsCompleted: 0 });
-        let addPlanRes = await createPlan(newPlan);
-        alert("New Plan created: " + addPlanRes);
+        var jsElm = document.createElement("script");
+        jsElm.type = "module";
+        jsElm.src = SCHEDULERSRCPATH;
+        document.body.appendChild(jsElm);
     }
 
 
@@ -81,7 +79,8 @@ let start = async function () {
             null,
             ["neck"],
             "PENDING",
-            { setsRequired: 10 },
+            { setsRequired: 10,
+                recommendedInterval:2  },
             { setsCompleted: 0 },
             0);
         let addRes = await createExercise(newExercise);
