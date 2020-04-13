@@ -8,8 +8,6 @@ import {
     updateExercise
 } from "./exercise.mjs";
 
-const SCHEDULERSRCPATH = "assets/js/scheduler.mjs";
-
 let start = async function () {
 
     // Retrieve list of users to see if the user is already initiated
@@ -39,22 +37,6 @@ let start = async function () {
         let addSetRes = await createSetting(newSetting);
         alert("New setting created: " + addSetRes);
     }
-
-
-    // Create the Scheduler web worker
-    if(typeof(Worker) !== "undefined") {
-        if(typeof(obj) == "undefined") {
-            new Worker(SCHEDULERSRCPATH, {
-                type: 'module'
-            });
-        }
-    } else {
-        var jsElm = document.createElement("script");
-        jsElm.type = "module";
-        jsElm.src = SCHEDULERSRCPATH;
-        document.body.appendChild(jsElm);
-    }
-
 
     // Create new exercise if not yet created
     let allExercises = await getExercises(null, new Date().toISOString());
