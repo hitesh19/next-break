@@ -1,4 +1,4 @@
-import { getDB, DBVERSION } from "./storage.mjs";
+import { getDB, DBVERSION } from "./IndexedDB/storage";
 
 export class Exercise {
     constructor(id, name, startTime, endTime, tags, currentState, constants,
@@ -25,9 +25,9 @@ export class Exercise {
 
 /**
  * Creates and stores a Exercise object
- * 
+ *
  * @param {Exercise} exercise An Exercise object to be stored
- * 
+ *
  * @returns {Promise} Returns id of the exercise added on success
  */
 export async function createExercise(exercise) {
@@ -53,10 +53,10 @@ export async function createExercise(exercise) {
 
 /**
  * Retrieve exercise objects from database.  Optionally filter from startTime
- * 
+ *
  * @param {string} startTimeAfter The ISO timestamp after which the exercise can start or null if not required
  * @param {string} startTimeBefore The ISO timestamp before which the exercise can start or null if not required
- * 
+ *
  * @returns {[Exercise]} Returns array of Exercise objects
  */
 export async function getExercises(startTimeAfter, startTimeBefore) {
@@ -101,9 +101,9 @@ export async function getExercises(startTimeAfter, startTimeBefore) {
 
 /**
  * Delete all Exercise objects from the database started before a timestamp
- * 
+ *
  * @param {string} timestamp The ISO timestamp before the exercises have to be deleted
- * 
+ *
  * @returns {boolean} Returns number of deleted records
  */
 export async function deleteExerciseStartedBefore(timestamp) {
@@ -120,7 +120,7 @@ export async function deleteExerciseStartedBefore(timestamp) {
 
 /**
  * Updates an existing exercise object
- * 
+ *
  * @returns {Promise} Returns id of the exercise on successful update
  */
 export async function updateExercise(exercise) {
@@ -141,4 +141,4 @@ export async function updateExercise(exercise) {
         version: DBVERSION
     });
     return result;
-} 
+}

@@ -1,3 +1,5 @@
+import Dexie from "dexie";
+
 const DBNAME = "nbDB";
 export const DBVERSION = 1;
 
@@ -13,8 +15,8 @@ let db = undefined;
  * Returns true if IndexedDB feature  is implemented in the browser
  */
 function checkDB() {
-    if (!self.indexedDB) {
-        console.error();
+    if (!window.indexedDB) {
+        console.error("IndexedDB not available");
         return false;
     } else {
         return true;
@@ -46,7 +48,7 @@ export async function getDB() {
         //Try to open the database, if not yet open
         if (db.isOpen() !== true) {
             db.open().catch(function (err) {
-                return reject(OPENERROR)
+                return reject(ERRORS.OPENERROR)
             });
         }
 

@@ -1,4 +1,4 @@
-import { getDB, DBVERSION } from "./storage.mjs";
+import { getDB, DBVERSION } from "./IndexedDB/storage";
 
 export class User {
     constructor(id, nickname, logoid, createdOn, updatedOn, version) {
@@ -13,9 +13,9 @@ export class User {
 
 /**
  * Creates and stores a User object
- * 
+ *
  * @param {User} user A User object to be stored
- * 
+ *
  * @returns {Promise} Returns id of the user added on success
  */
 export async function createUser(user) {
@@ -34,7 +34,7 @@ export async function createUser(user) {
 
 /**
  * get list of stored User objects
- * 
+ *
  * @returns {[User]} An array of User objects
  */
 export async function getUsers() {
@@ -46,4 +46,4 @@ export async function getUsers() {
         result.push(uOb);
     }
     return result
-} 
+}
