@@ -1,4 +1,4 @@
-import { getDB, DBVERSION } from "./storage.mjs";
+import { getDB, DBVERSION } from "./IndexedDB/storage";
 
 export class Setting {
     constructor(id, name, value, createdOn, updatedOn, version) {
@@ -13,9 +13,9 @@ export class Setting {
 
 /**
  * Creates and stores a Setting object
- * 
+ *
  * @param {Setting} setting A Setting object to be stored
- * 
+ *
  * @returns {Promise} Returns id of the setting added on success
  */
 export async function createSetting(setting) {
@@ -34,10 +34,9 @@ export async function createSetting(setting) {
 
 /**
  * Update a Setting object
- * 
- * @param {string} id An id of the Setting object to be updated
+ *
  * @param {Setting} setting the updated setting object which will replace old settings
- * 
+ *
  * @returns {Promise} Returns id of the setting on successful update
  */
 export async function updateSetting(setting) {
@@ -56,7 +55,7 @@ export async function updateSetting(setting) {
 
 /**
  * get list of stored Setting objects
- * 
+ *
  * @returns {[Setting]} An array of Setting objects
  */
 export async function getSettings() {
@@ -69,4 +68,3 @@ export async function getSettings() {
     }
     return result
 }
-
