@@ -4,11 +4,13 @@ export async function displayNotification(message) {
     return;
   } else {
     let permission = Notification.permission;
+    let notification;
     if (Notification.permission !== "granted") {
       permission = await window.Notification.requestPermission();
     }
     if (permission === "granted") {
-      new Notification(`${message}`);
+      notification = new Notification(`${message}`);
+      notification.onclick = handleNotificationOnClick;
     } else {
       console.error("Notification permission denied");
     }
@@ -31,4 +33,8 @@ export async function requestNotificationPermission() {
   } else {
     alert("Error: Notifications not supported");
   }
+}
+
+function handleNotificationOnClick() {
+  window.focus();
 }
