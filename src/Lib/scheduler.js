@@ -14,7 +14,7 @@ async function updateExerciseToPending(exercise) {
 }
 
 export function initScheduler() {
-  let fn = async function() {
+  let fn = async function () {
     let now = new Date(),
       oneMinMinusNow = new Date(
         new Date().setMinutes(now.getMinutes() - TIMEINTERVAL)
@@ -28,7 +28,7 @@ export function initScheduler() {
     }
   };
 
-  setInterval(fn, TIMEINTERVAL * 60 * 1000);
+  setIntervalId = setInterval(fn, TIMEINTERVAL * 60 * 1000);
 }
 
 export function stopScheduler() {
