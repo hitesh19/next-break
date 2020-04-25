@@ -28,9 +28,11 @@ export default function(state = initialState, action) {
     let newState = JSON.parse(JSON.stringify(state));
     newState.userState = USER_STATES.AWAITING_EXERCISE;
     return newState;
-  } else if(action.type === "SETTINGS_CREATED"){
+  } else if(action.type === "SETTINGS_SAVED"){
     let newState = JSON.parse(JSON.stringify(state));
-    newState.userState = USER_STATES.AWAITING_EXERCISE;
+    if(newState.userState === USER_STATES.AWAITING_USER_SETTINGS){
+      newState.userState = USER_STATES.AWAITING_EXERCISE;
+    }
     return newState;
   } else {
     return state;

@@ -7,7 +7,7 @@ import {
   getSettings,
   updateSetting
 } from "../../Lib/setting";
-import { Exercise, createExercise } from "../../Lib/exercise";
+import { Exercise, createExercise, getExercises } from "../../Lib/exercise";
 import moment from "moment";
 import { requestNotificationPermission } from "../../Lib/notifier";
 
@@ -16,30 +16,36 @@ class SettingsPage extends React.Component {
     super(props);
     this.state = {
       isLoaded: false,
-      exerciseInterval: 30
+      exerciseInterval: 30,
+      useCamera: true
     };
   }
 
   async componentDidMount() {
     // Load existing settings (if available)
-    let isFound = false;
-    let exerciseIntervalSetting = null;
+    let settings = {};
+    settings["exerciseInterval"] = this.state.exerciseInterval;
+    settings["useCamera"] = this.state.useCamera;
     let allSettings = await getSettings();
     if (allSettings && allSettings.length > 0) {
       for (let setting of allSettings) {
         if (setting.name === "exerciseInterval") {
-          isFound = true;
-          exerciseIntervalSetting = setting;
+          settings["exerciseInterval"] = setting.value;
           break;
+        }
+
+        if (setting.name === "useCamera") {
+          settings["useCamera"] = settings.value;
         }
       }
     }
 
-    if (isFound === true) {
-      this.setState({
-        exerciseInterval: exerciseIntervalSetting.value
-      });
-    }
+    //Update settings
+    this.setState({
+      exerciseInterval: settings["exerciseInterval"],
+      useCamera: settings["useCamera"]
+    });
+
     this.setState({
       isLoaded: true
     });
@@ -66,31 +72,43 @@ class SettingsPage extends React.Component {
           Exercise Interval (mins) :
           <input
             type="number"
+            name="exerciseInterval"
             value={this.state.exerciseInterval}
             onChange={this.handleChange.bind(this)}
           />
-          <button onClick={this.handleSubmit.bind(this)}>Save</button>
         </div>
+        <br />
+        <div>
+          Use Camera :
+          <input
+            type="checkbox"
+            name="useCamera"
+            checked={this.state.useCamera}
+            onChange={this.handleChange.bind(this)}
+          />
+        </div>
+        <br />
+        <button onClick={this.handleSubmit.bind(this)}>Save</button>
       </div>
     );
   }
 
   handleChange(event) {
-    this.setState({
-      exerciseInterval: event.target.value
-    });
+    let ob = {};
+    ob[event.target.name] = event.target.value;
+    this.setState(ob);
   }
 
-  async handleSubmit() {
+  async saveSetting(settingName, settingValue) {
     //Check if setting already exists
     let isFound = false;
-    let exerciseIntervalSetting = null;
+    let existingSetting = null;
     let allSettings = await getSettings();
     if (allSettings && allSettings.length > 0) {
       for (let setting of allSettings) {
-        if (setting.name === "exerciseInterval") {
+        if (setting.name === settingName) {
           isFound = true;
-          exerciseIntervalSetting = setting;
+          existingSetting = setting;
           break;
         }
       }
@@ -98,13 +116,31 @@ class SettingsPage extends React.Component {
 
     if (isFound === false) {
       // No setting exists, create new
-      let newSetting = new Setting("exerciseInterval", "exerciseInterval", {
-        label: "Exercise interval",
-        duration: this.state.exerciseInterval
-      });
+      let newSetting = new Setting(settingName, settingName, settingValue);
       await createSetting(newSetting);
+    } else {
+      // Update existing setting
+      existingSetting.value = settingValue;
+      updateSetting(existingSetting);
+    }
+  }
 
-      // Create First Exercise
+  async handleSubmit() {
+    // save "exerciseInterval"
+    await this.saveSetting("exerciseInterval", {
+      label: "Exercise interval",
+      duration: this.state.exerciseInterval
+    });
+
+    // save "useCamera"
+    await this.saveSetting("useCamera", this.state["useCamera"]);
+
+    // Request Notification permission
+    await requestNotificationPermission();
+
+    // Create First Exercise
+    let allExercises = await getExercises();
+    if (!(allExercises && allExercises.length > 0)) {
       let newExercise = new Exercise(
         "exercise1",
         "exercise1",
@@ -125,19 +161,12 @@ class SettingsPage extends React.Component {
         0
       );
       await createExercise(newExercise);
-      await requestNotificationPermission();
-      this.props.dispatch({
-        type: "SETTINGS_CREATED"
-      });
-    } else {
-      if (exerciseIntervalSetting.value !== this.state.exerciseInterval) {
-        // Value changed, update existing setting
-        exerciseIntervalSetting.value = this.state.exerciseInterval;
-        updateSetting(exerciseIntervalSetting);
-      } else {
-        // No need to update, keep existing settings
-      }
     }
+
+    // Update app state (if required)
+    this.props.dispatch({
+      type: "SETTINGS_SAVED"
+    });
   }
 }
 

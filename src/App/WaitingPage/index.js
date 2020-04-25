@@ -2,13 +2,16 @@ import React from "react";
 import "./res/style.css";
 import { connect } from "react-redux";
 import { getExercises } from "../../Lib/exercise";
+import moment from "moment";
 
 class WaitingPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoaded: false,
-      exerciseCount: 0
+      exerciseCount: 0,
+      pendingExercises: [],
+      pendingExerciseCount: 0
     };
   }
 
@@ -16,9 +19,18 @@ class WaitingPage extends React.Component {
     // Check if any exercise is scheduled
     let allExercises = await getExercises(new Date());
     let exerciseCount = allExercises.length;
+    let pendingExercises = allExercises.filter((ex)=>{
+      if(moment(ex.startTime) <= moment()){
+        return true
+      } else {
+        return false
+      }
+    })
     this.setState({
       isLoaded: true,
-      exerciseCount: exerciseCount
+      exerciseCount: exerciseCount,
+      pendingExercises: pendingExercises,
+      pendingExerciseCount: pendingExercises.length
     });
   }
 
@@ -36,6 +48,7 @@ class WaitingPage extends React.Component {
       <div>
         <h1>Waiting Page</h1>
         <div>Number of upcoming exercises : {this.state.exerciseCount}</div>
+        <div>Number of pending exercises : {this.state.pendingExerciseCount}</div>
       </div>
     );
   }
