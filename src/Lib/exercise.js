@@ -1,5 +1,13 @@
 import { getDB, DBVERSION } from "./IndexedDB/storage";
 
+export const EXERCISE_STATES = {
+    "PENDING" : "PENDING",
+    "STARTED": "STARTED",
+    "PAUSED": "PAUSED",
+    "FINISHED": "FINISHED",
+    "CANCELLED": "CANCELLED"
+};
+
 export class Exercise {
     constructor(id, name, startTime, endTime, tags, currentState, constants,
         variables,
@@ -10,8 +18,8 @@ export class Exercise {
     ) {
         this.id = id;
         this.name = name;
-        this.startTime = !startTime || startTime == null ? null :  new Date(startTime);
-        this.endTime = !endTime || endTime == null ? null :  new Date(endTime);
+        this.startTime = !startTime || startTime == null ? null : new Date(startTime);
+        this.endTime = !endTime || endTime == null ? null : new Date(endTime);
         this.tags = tags;
         this.currentState = currentState;
         this.constants = constants;
@@ -20,6 +28,20 @@ export class Exercise {
         this.createdOn = createdOn;
         this.updatedOn = updatedOn;
         this.version = version;
+    }
+
+    isActive() {
+        let retVal = false;
+        let now = new Date();
+        if (this.startTime <= now) {
+            if (typeof this.currentState.exerciseState === "string") {
+                if (this.currentState.exerciseState !== EXERCISE_STATES.FINISHED
+                    && this.currentState.exerciseState !== EXERCISE_STATES.CANCELLED) {
+                    retVal = true;
+                }
+            }
+        }
+        return retVal;
     }
 }
 
@@ -33,7 +55,9 @@ export class Exercise {
 export async function createExercise(exercise) {
     let db = await getDB();
     let now = new Date();
-    let addResult = await db.exercises.add({
+
+    //Set default state of the exercise
+    let exerciseOb = {
         id: exercise.id,
         name: exercise.name,
         startTime: exercise.startTime,
@@ -46,7 +70,10 @@ export async function createExercise(exercise) {
         createdOn: now,
         updatedOn: now,
         version: DBVERSION
-    });
+    };
+    exerciseOb.currentState["exerciseState"] = EXERCISE_STATES.PENDING;
+
+    let addResult = await db.exercises.add(exerciseOb);
     return addResult;
 }
 

@@ -106,8 +106,8 @@ class SettingsPage extends React.Component {
 
       // Create First Exercise
       let newExercise = new Exercise(
-        "exercise1",
-        "exercise1",
+        "neck-exercise-1",
+        "neck-exercise-1",
         new Date(
           moment()
             .add(this.state.exerciseInterval, "minutes")
