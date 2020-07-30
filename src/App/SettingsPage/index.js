@@ -120,6 +120,8 @@ class SettingsPage extends React.Component {
             .toISOString()
         ),
         ["neck"],
+        {
+        },
         { setsRequired: 10, recommendedInterval: 2 },
         { setsCompleted: 0 },
         0

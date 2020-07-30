@@ -18,7 +18,8 @@
     "start": "react-scripts start --no-cache",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "increase-wathcers-limit" : "sudo sysctl fs.inotify.max_user_watches=524288 && sudo sysctl -p"
   },
   "eslintConfig": {
     "extends": "react-app"

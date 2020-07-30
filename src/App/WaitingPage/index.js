@@ -1,7 +1,7 @@
 import React from "react";
 import "./res/style.css";
 import { connect } from "react-redux";
-import { getExercises } from "../../Lib/exercise";
+import { getCurrentExercise } from "Lib/exercise";
 
 class WaitingPage extends React.Component {
 
@@ -9,22 +9,22 @@ class WaitingPage extends React.Component {
     super(props);
     this.state = {
       isLoaded: false,
-      activeExercises: undefined
+      currentExercise: undefined
     };
   }
   
   async checkForActiveExercises(){
-    //TODO: Check if any exercise is scheduled
-    let exercises = await getExercises();
-    if(exercises && exercises.length > 0){
-      let activeExercises = exercises.filter((e)=>(e.isActive()));
+    
+    let currentExercise = await getCurrentExercise();
+
+    if(currentExercise != null){
       this.setState({
-        activeExercises: activeExercises,
+        currentExercise: currentExercise,
         isLoaded: true
       });  
     } else {
       this.setState({
-        activeExercises: [],
+        currentExercise: null,
         isLoaded: true
       });
     }
@@ -47,15 +47,14 @@ class WaitingPage extends React.Component {
         </div>
       );
     }
-    let activeExerciseCount = this.state.activeExercises.length;
-    if(activeExerciseCount > 0){
-      let selectedExercise = this.state.activeExercises[0];
+    let currentExercise = this.state.currentExercise;
+    if(currentExercise != null){
       return (
         <div>
           <h1>Waiting Page</h1>
           <div>You have a exercise due! Click Start Exercise to begin exercising and stay fit.</div>
-      <div>Exercise Name: {selectedExercise.name}</div>
-          <button onClick={()=>{alert("TODO")}}>Start Exercise</button>
+      <div>Exercise Name: {currentExercise.name}</div>
+          <button onClick={this.handleExerciseStart.bind(this)}>Start Exercise</button>
         </div>
       );
     } else {
@@ -76,6 +75,11 @@ class WaitingPage extends React.Component {
     }
   }
   
+  handleExerciseStart(){
+    this.props.dispatch({
+      type: "START_EXERCISE"
+    });
+  }
   
 }
 

@@ -169,3 +169,22 @@ export async function updateExercise(exercise) {
     });
     return result;
 }
+
+/**
+ * Gets the current exercise to be performed by the user (if available)
+ * 
+ * @returns {Exercise} Returns the current Exercise object or null otherwise
+ */
+export async function getCurrentExercise(){
+    //TODO: Handle multiple pending exercises with some logic
+    let retVal = null;
+    let exercises = await getExercises();
+    if(exercises && exercises.length > 0){
+      let activeExercises = exercises.filter((e)=>(e.isActive()));
+      if(activeExercises && activeExercises.length > 0){
+        retVal = activeExercises[0];
+      }
+    }
+
+    return retVal;
+}
