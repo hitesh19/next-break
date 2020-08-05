@@ -1,23 +1,29 @@
 import React from "react";
 import "./res/style.css";
 import { connect } from "react-redux";
-import {getCurrentExercise} from "Lib/exercise";
+import { getCurrentExercise, updateExercise } from "Lib/exercise";
 
 class ExercisePage extends React.Component {
 
-  state={
+  state = {
     currentExercise: null,
-    isLoaded: false
+    isLoaded: false,
+    ExerciseComponent: null
   };
-  
-  async componentDidMount(){
-    
+
+  async componentDidMount() {
+
     // Check if any Exercise is active
     let currentExercise = await getCurrentExercise();
-    if(getCurrentExercise != null){
+    if (getCurrentExercise != null) {
+      //Import the Exercise component
+      let ExerciseModule = await import("Exercises/" + currentExercise.name);
+      let ExerciseComponent = ExerciseModule.default;
+
       this.setState({
         currentExercise: currentExercise,
-        isLoaded: true
+        isLoaded: true,
+        ExerciseComponent: ExerciseComponent
       })
     } else {
       //Go back to the waiting page
@@ -28,7 +34,7 @@ class ExercisePage extends React.Component {
   }
 
   render() {
-    
+
     if (this.state.isLoaded !== true) {
       return (
         <div>
@@ -36,20 +42,47 @@ class ExercisePage extends React.Component {
           <div>Loading ...</div>
         </div>
       );
-    } else {
+    }
+    else {
+
+      let ExerciseComponent = this.state.ExerciseComponent;
+
       return (
         <div>
           <h1>Exercise Page</h1>
           <div>Current Exercise : {this.state.currentExercise.name}</div>
-          <div>Progress : {this.state.currentExercise.progress}</div>
+          <div>Progress : {this.state.currentExercise.progress + " %"}</div>
+          <hr/>
+          {
+            ExerciseComponent != null
+              ?
+              <ExerciseComponent
+                updateProgress={this.updateProgress.bind(this)}
+                currentExercise={this.state.currentExercise}
+              />
+              :
+              null
+          }
         </div>
-        
-      )
+      );
+
+
+
     }
-    
-    
+
   }
-  
+
+  async updateProgress(progress) {
+
+    let currentExercise = this.state.currentExercise;
+    currentExercise.progress = progress;
+    updateExercise(currentExercise);
+    this.setState({
+      currentExercise: currentExercise
+    })
+    return 0;
+  }
+
 }
 
 const mapStateToProps = (state /*, ownProps*/) => {
