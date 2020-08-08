@@ -1,6 +1,7 @@
 import React from "react";
 import "./res/style.css";
 import { connect } from "react-redux";
+import { updateExercise } from "Lib/exercise";
 
 const DURATION = 60000;
 
@@ -27,6 +28,7 @@ class Walk extends React.Component {
   }
 
   async updateProgress() {
+    let currentExercise = this.props.currentExercise;
     let cp = this.state.currentProgress;
     let isFinished = this.state.isFinished;
     if (cp < 90) {
@@ -41,6 +43,14 @@ class Walk extends React.Component {
       }
     } else {
       if (!isFinished) {
+
+        // Exercise completed
+
+        //Persist any variables used by the exercise
+        currentExercise.variables.setsCompleted = 1;
+        updateExercise(currentExercise);
+
+        //Call the parent component and let it know all is done
         let updateRetCode = await this.props.updateProgress(100);
         if (updateRetCode === 0) {
           this.setState({
@@ -52,12 +62,7 @@ class Walk extends React.Component {
         }
 
       } else {
-        //For testing only
-        await this.props.updateProgress(0);
-        this.setState({
-          currentProgress: 0,
-          isFinished: false
-        })
+        // Nothing to do now, exercise is completed
       }
     }
   }

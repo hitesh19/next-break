@@ -1,7 +1,7 @@
 import React from "react";
 import "./res/style.css";
 import { connect } from "react-redux";
-import { getCurrentExercise, updateExercise } from "Lib/exercise";
+import { getCurrentExercise, updateExercise, EXERCISE_STATES } from "Lib/exercise";
 
 class ExercisePage extends React.Component {
 
@@ -19,6 +19,13 @@ class ExercisePage extends React.Component {
       //Import the Exercise component
       let ExerciseModule = await import("Exercises/" + currentExercise.name);
       let ExerciseComponent = ExerciseModule.default;
+
+      //Start the exercise
+      currentExercise.currentState.exerciseState = EXERCISE_STATES.STARTED;
+      if(currentExercise.progress === 0){
+        currentExercise.startTime = new Date();
+      }
+      await updateExercise(currentExercise);
 
       this.setState({
         currentExercise: currentExercise,
@@ -75,12 +82,33 @@ class ExercisePage extends React.Component {
   async updateProgress(progress) {
 
     let currentExercise = this.state.currentExercise;
-    currentExercise.progress = progress;
-    updateExercise(currentExercise);
-    this.setState({
-      currentExercise: currentExercise
-    })
-    return 0;
+    
+
+    if(progress >= 0 && progress < 100){
+      //Progress update
+      currentExercise.progress = progress;
+      await updateExercise(currentExercise);
+      this.setState({
+        currentExercise: currentExercise
+      })
+      return 0;
+    } else if(progress  === 100){
+      //Exercise completed
+      currentExercise.progress = 100;
+      currentExercise.currentState.exerciseState = EXERCISE_STATES.FINISHED;
+      currentExercise.endTime = new Date();
+      await updateExercise(currentExercise);
+      this.setState({
+        currentExercise: currentExercise
+      })
+      //TODO: Ask scheduler to re-schedule the completed exercise
+      this.props.dispatch({
+        "type" : "START_AS_AWAITING_EXERCISE"
+      })
+      return 0; //This will probably not execute as the page is about to change
+    } else {
+      return -1; //Out of range Error
+    }
   }
 
 }

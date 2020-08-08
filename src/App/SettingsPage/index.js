@@ -116,7 +116,7 @@ class SettingsPage extends React.Component {
         new Date(
           moment()
             .add(this.state.exerciseInterval, "minutes")
-            .add(2, "minute")
+            .add(1, "minute")
             .toISOString()
         ),
         ["legs", "non-seated"],
