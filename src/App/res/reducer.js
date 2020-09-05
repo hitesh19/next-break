@@ -32,6 +32,10 @@ export default function(state = initialState, action) {
     let newState = JSON.parse(JSON.stringify(state));
     newState.userState = USER_STATES.AWAITING_EXERCISE;
     return newState;
+  } else if(action.type === "START_EXERCISE"){
+    let newState = JSON.parse(JSON.stringify(state));
+    newState.userState = USER_STATES.EXERCISING;
+    return newState;
   } else {
     return state;
   }

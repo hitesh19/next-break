@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import LandingPage from "./LandingPage";
 import SettingsPage from "./SettingsPage";
 import WaitingPage from "./WaitingPage";
+import ExercisePage from "./ExercisePage";
 import { USER_STATES } from "./res/constants";
 import { getUsers } from "../Lib/user";
 import { getSettings } from "../Lib/setting";
@@ -73,6 +74,8 @@ class App extends React.Component {
       return <SettingsPage />;
     } else if (this.props.app.userState === USER_STATES.AWAITING_EXERCISE) {
       return <WaitingPage />;
+    } else if (this.props.app.userState === USER_STATES.EXERCISING) {
+      return <ExercisePage />;
     } else {
       return <div>Error : Unknown App State</div>;
     }

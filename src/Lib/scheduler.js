@@ -1,4 +1,4 @@
-import { getExercises, updateExercise } from "./exercise";
+import { getExercises, updateExercise, EXERCISE_STATES } from "./exercise";
 import { displayNotification } from "./notifier";
 
 const TIMEINTERVAL = 1;
@@ -6,7 +6,7 @@ let setIntervalId = null;
 
 async function updateExerciseToPending(exercise) {
   let selectedExercise = Object.assign({}, exercise);
-  selectedExercise.currentState = "PENDING";
+  selectedExercise.currentState["exerciseState"] = EXERCISE_STATES.PENDING;
 
   updateExercise(selectedExercise);
 
