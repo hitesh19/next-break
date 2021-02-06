@@ -146,8 +146,8 @@ class SettingsPage extends React.Component {
         ["legs", "non-seated"],
         {
         },
-        { setsRequired: 1, recommendedInterval: 1 },
-        { setsCompleted: 0 },
+        { transitionsRequired: 5 },
+        { },
         0
       );
       await createExercise(newExercise);

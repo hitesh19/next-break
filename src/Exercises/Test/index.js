@@ -1,11 +1,11 @@
 import React from "react";
 import { connect } from "react-redux";
-import { updateExercise } from "Lib/exercise";
+// import { updateExercise } from "Lib/exercise";
 import * as posenet from '@tensorflow-models/posenet';
 import * as tf from '@tensorflow/tfjs';
 
 
-const DURATION = 60000;
+// const DURATION = 60000;
 const MINIMUM_POSE_SCORE = 0.1;
 const COLOR = `aqua`;
 
@@ -20,11 +20,17 @@ class Test extends React.Component {
             width: 500,
             height: 600
         },
-        showVideo: false
+        showVideo: false,
+        currentSide: null
     };
 
     async componentDidMount() {
         let currentExercise = this.props.currentExercise;
+
+        let transitionsRequired = 5;
+        if(currentExercise.constants.transitionsRequired){
+            transitionsRequired = currentExercise.constants.transitionsRequired
+        }
 
         //Initialize camera
         let video = await this.setupCamera(this.state.resolution.width, this.state.resolution.height);
@@ -49,7 +55,8 @@ class Test extends React.Component {
             net: net,
             showVideo: true,
             canvas: canvas,
-            ctx: ctx
+            ctx: ctx,
+            transitionsPending: transitionsRequired
         })
 
     }
@@ -86,37 +93,103 @@ class Test extends React.Component {
         // console.log(this.state.video, this.state.net);
 
         //Draw latest captured image
-        this.state.ctx.clearRect(0, 0, this.state.resolution.width, this.state.resolution.height);
-        this.state.ctx.save();
-        this.state.ctx.scale(-1, 1);
-        this.state.ctx.translate(-this.state.resolution.width, 0);
-        this.state.ctx.drawImage(this.state.video, 0, 0, this.state.resolution.width, this.state.resolution.height);
-        this.state.ctx.restore();
+        if(this.state.ctx && this.state.net){
+            
+            this.state.ctx.clearRect(0, 0, this.state.resolution.width, this.state.resolution.height);
+            this.state.ctx.save();
+            this.state.ctx.scale(-1, 1);
+            this.state.ctx.translate(-this.state.resolution.width, 0);
+            this.state.ctx.drawImage(this.state.video, 0, 0, this.state.resolution.width, this.state.resolution.height);
+            this.state.ctx.restore();
+    
+            //If posenet is available, perform pose estimation
+            if (this.state.net) {
+                const poses = await this.state.net.estimatePoses(this.state.video, {
+                    flipHorizontal: true,
+                    decodingMethod: 'single-person'
+                });
+    
+                if (poses && poses.length > 0) {
+                    let keypoints = poses[0].keypoints;
+                    let score = poses[0].score;
+                    console.log("Overall Score = ", score);
+                    if (score >= MINIMUM_POSE_SCORE) {
+                        this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "nose");
+                        this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "leftShoulder");
+                        this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "rightShoulder");
+                        // this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "leftEar");
+                        // this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "rightEar");
+                        // drawSkeleton(keypoints, minPartConfidence, ctx);
+                        // drawBoundingBox(keypoints, ctx);
+                        
+                        let newSide = this.getSide(
+                            poses[0].keypoints[0].position,
+                            poses[0].keypoints[5].position,
+                            poses[0].keypoints[6].position,
+                        )
 
-        //If posenet is available, perform pose estimation
-        if (this.state.net) {
-            const poses = await this.state.net.estimatePoses(this.state.video, {
-                flipHorizontal: true,
-                decodingMethod: 'single-person'
-            });
+                        if( newSide){
+                            if(!this.state.currentSide){
+                                this.setState({
+                                    currentSide: newSide
+                                })
+                            } else {
+                                if(this.state.currentSide !== newSide){
+                                    //Transition case
+                                    alert("transition mil gya")
 
-            if (poses && poses.length > 0) {
-                let keypoints = poses[0].keypoints;
-                let score = poses[0].score;
-                console.log("Overall Score = ", score);
-                if (score >= MINIMUM_POSE_SCORE) {
-                    this.drawKeypoints(keypoints, MINIMUM_POSE_SCORE, this.state.ctx, 1, "nose");
-                    // drawSkeleton(keypoints, minPartConfidence, ctx);
-                    // drawBoundingBox(keypoints, ctx);
+                                    if(this.state.transitionsPending === 0){
+                                        this.setState({
+                                            currentSide: newSide
+                                        })
+                                        this.props.updateProgress(100);
+                                    } else {
+                                        this.setState({
+                                            currentSide: newSide,
+                                            transitionsPending: this.state.transitionsPending - 1
+                                        })
+                                    }
+                                    
+                                }
+                            }
 
+
+                        }
+                    }
                 }
+    
+    
+    
+                //   poses = poses.concat(pose);
             }
+        }
+        
 
+    }
 
+    getSide(nosePos, leftShoulderPos, rightShoulderPos){
+        let side = undefined;
+        let leftDistance;
+        let rightDistance;
+        let ratio;
 
-            //   poses = poses.concat(pose);
+        //Nose is in center (as expected)
+        if(nosePos.x > leftShoulderPos.x 
+            && nosePos.x < rightShoulderPos.x){
+
+                leftDistance = nosePos.x - leftShoulderPos.x;
+                rightDistance = rightShoulderPos.x - nosePos.x;
+
+                ratio = leftDistance/rightDistance;
+
+                if(ratio < 0.8){
+                    side = "left";
+                } else if (ratio > 1.2){
+                    side = "right";
+                }
         }
 
+        return side;
     }
 
     drawKeypoints(keypoints, minConfidence, ctx, scale = 1, keypointToShow) {
