@@ -104,10 +104,34 @@ class SettingsPage extends React.Component {
       });
       await createSetting(newSetting);
 
+      // // Create First Exercise
+      // let newExercise = new Exercise(
+      //   "exercise-1",
+      //   "Walk",
+      //   new Date(
+      //     moment()
+      //       .add(this.state.exerciseInterval, "minutes")
+      //       .toISOString()
+      //   ),
+      //   new Date(
+      //     moment()
+      //       .add(this.state.exerciseInterval, "minutes")
+      //       .add(1, "minute")
+      //       .toISOString()
+      //   ),
+      //   ["legs", "non-seated"],
+      //   {
+      //   },
+      //   { setsRequired: 1, recommendedInterval: 1 },
+      //   { setsCompleted: 0 },
+      //   0
+      // );
+      // await createExercise(newExercise);
+
       // Create First Exercise
       let newExercise = new Exercise(
         "exercise-1",
-        "Walk",
+        "Test",
         new Date(
           moment()
             .add(this.state.exerciseInterval, "minutes")
@@ -122,11 +146,12 @@ class SettingsPage extends React.Component {
         ["legs", "non-seated"],
         {
         },
-        { setsRequired: 1, recommendedInterval: 1 },
-        { setsCompleted: 0 },
+        { transitionsRequired: 5 },
+        { },
         0
       );
       await createExercise(newExercise);
+
       await requestNotificationPermission();
       this.props.dispatch({
         type: "SETTINGS_CREATED"
