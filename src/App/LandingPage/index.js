@@ -13,12 +13,13 @@ class LandingPage extends React.Component {
 
   render() {
     return (
-    <div>
-      <h1>
-        Landing Page
-      </h1>
-      <div>
-        <button onClick = {this.handleStart.bind(this)} >Start as new user</button>
+    <div className='landing-page display-flex align-items-center flex-direction-column justify-content-space-evenly'>
+      <div className='hero-content display-flex align-items-center flex-direction-column'>
+        <span>NEXT BREAK</span>
+        <p>Your convivial excercise companion</p>
+      </div>
+      <div className='get-started-btn ease display-flex align-items-center'>
+        <button onClick = {this.handleStart.bind(this)} >GET STARTED</button>
       </div>
     </div>
     );
