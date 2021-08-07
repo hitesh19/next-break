@@ -1,0 +1,29 @@
+.landing-page{
+    justify-content: space-evenly;
+    height: 100%;
+    background-color: #0E0E35;
+    color: #ECECEC;
+}
+
+.landing-page span{
+    font-size: 3.8em;
+    font-family: AnonymousPro;
+}  
+
+.landing-page p{
+    font-size: 1.75em;
+    margin-top: 2em;
+}
+
+.landing-page .get-started-btn{
+    border: 2px solid #ECECEC;
+    width: 10em;
+    height: 3.5em;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.landing-page .get-started-btn:hover{
+    background: rgba(255,255,255,.3);
+} 
