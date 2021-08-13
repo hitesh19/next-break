@@ -1,0 +1,80 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 50px 0.1fr 0.6fr 0.5fr 1fr 0.8fr 0.4fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "header header header"
+    ". . ."
+    "page-title page-title page-title"
+    "welcome-msg welcome-msg welcome-msg"
+    "settings-area settings-area settings-area"
+    "actions actions actions"
+    ". . .";
+  width: 100%;
+  height: 100vh;
+  background-color: #ececec;
+  font-family: "NovaMono";
+}
+
+.header {
+  grid-area: header;
+  background-color: #0e0e35;
+  font-family: AnonymousPro;
+  color: #ececec;
+  font-size: 35px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.header-logo {
+  display: inline-block;
+  align-self: center;
+  margin-left: 20px;
+}
+
+.page-title {
+  grid-area: page-title;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  font-size: 25px;
+  align-items: center;
+}
+
+.welcome-msg {
+  grid-area: welcome-msg;
+  padding-left: 20px;
+  font-size: 25px;
+}
+
+.name {
+  color: #4a7e9b;
+}
+.settings-area {
+  grid-area: settings-area;
+  padding-left: 20px;
+  font-size: 15px;
+}
+.setting-box {
+  margin-top: 20px;
+}
+.actions {
+  grid-area: actions;
+  padding-left: 20px;
+}
+
+.btn {
+  border: 2px solid #4A7E9B;
+  width: 100px;
+  height: 50px;
+  justify-content: center;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.btn:hover{
+  background: #96bdd3;
+} 

@@ -27,7 +27,7 @@ class LandingPage extends React.Component {
 
   async handleStart(){
     //Decide a user name
-    let userName = "NewUser_"+new Date().toISOString();
+    let userName = "Lazy Panda";
     let newUserOb = new User(userName, userName, "logo-001");
     let addRes = await createUser(newUserOb);
     if(addRes === userName){
