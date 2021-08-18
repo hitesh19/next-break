@@ -17,6 +17,21 @@ export async function displayNotification(message) {
   }
 }
 
+export async function currentNotificationPermission() {
+  if (window.Notification) {
+    let permission = Notification.permission;
+    if (Notification.permission !== "granted") {
+      return false;
+    } else if (permission === "granted") {
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    return false;
+  }
+}
+
 export async function requestNotificationPermission() {
   if (window.Notification) {
     let permission = Notification.permission;
@@ -27,7 +42,7 @@ export async function requestNotificationPermission() {
       new Notification("Notification permission granted");
     } else {
       alert(
-        "Notification permission denied, you will not receive notifications"
+        "Notification permission denied, please change your browser's Notification permission"
       );
     }
   } else {

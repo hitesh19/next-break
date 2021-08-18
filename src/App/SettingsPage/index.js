@@ -5,18 +5,24 @@ import {
   Setting,
   createSetting,
   getSettings,
-  updateSetting
+  updateSetting,
 } from "../../Lib/setting";
 import { Exercise, createExercise } from "../../Lib/exercise";
 import moment from "moment";
-import { requestNotificationPermission } from "../../Lib/notifier";
+import {
+  currentNotificationPermission,
+  requestNotificationPermission,
+} from "../../Lib/notifier";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
 
 class SettingsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoaded: false,
-      exerciseInterval: 30
+      exerciseInterval: 30,
+      notifPerm: false,
     };
   }
 
@@ -37,11 +43,19 @@ class SettingsPage extends React.Component {
 
     if (isFound === true) {
       this.setState({
-        exerciseInterval: exerciseIntervalSetting.value
+        exerciseInterval: exerciseIntervalSetting.value,
       });
     }
+
+    //Check permissions
+    let notifPerm = await currentNotificationPermission();
     this.setState({
-      isLoaded: true
+      notifPerm: notifPerm,
+    });
+
+    //Done loading
+    this.setState({
+      isLoaded: true,
     });
   }
 
@@ -56,28 +70,82 @@ class SettingsPage extends React.Component {
     }
 
     return (
-      <div>
-        <h1>Settings Page</h1>
-        <div>
-          Welcome {this.props.app.userName} ! Configure settings below -
+      <div className="container">
+        <div className="header">
+          <div className="header-logo">NEXT BREAK</div>
         </div>
-        <br />
-        <div>
-          Exercise Interval (mins) :
-          <input
-            type="number"
-            value={this.state.exerciseInterval}
-            onChange={this.handleChange.bind(this)}
-          />
-          <button onClick={this.handleSubmit.bind(this)}>Save</button>
+        <div className="page-title">SETTINGS</div>
+        <div className="welcome-msg">
+          Welcome <span className="name">{this.props.app.userName}</span> !
+        </div>
+        <div className="settings-area">
+          <div className="setting-box">
+            <div className="setting-row">
+              <span>EXERCISE INTERVAL (mins) :</span>
+              <span>
+                <TextField
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  style={{
+                    "marginLeft" : "10px"
+                  }}
+                  inputProps={{
+                    style: {
+                      width: "60px",
+                      "textAlign": "center",
+                      padding: "1px",
+                    }
+                  }}
+                  value={this.state.exerciseInterval}
+                  onChange={this.handleChange.bind(this)}
+                />
+              </span>
+            </div>
+          </div>
+          <div className="setting-box">
+            <span>NOTIFICATIONS :</span>
+
+            <span>
+              <Switch
+                checked={this.state.notifPerm}
+                onChange={this.handleNPToggle.bind(this)}
+                name="otif-perm"
+                color="primary"
+                inputProps={{ "aria-label": "Notifications checkbox" }}
+              />
+            </span>
+          </div>
+        </div>
+        <div className="actions">
+          <button className="btn" onClick={this.handleSubmit.bind(this)}>
+            NEXT
+          </button>
         </div>
       </div>
     );
   }
 
+  async handleNPToggle(event) {
+    let val = event.target.checked;
+    let currentPerm = await currentNotificationPermission();
+    if (currentPerm === false && val === true) {
+      await requestNotificationPermission();
+      let newPerm = await currentNotificationPermission();
+      if (newPerm === true) {
+        this.setState({
+          notifPerm: true,
+        });
+      }
+    } else if (currentPerm === true) {
+      alert("Permission already granted");
+    }
+  }
+
   handleChange(event) {
     this.setState({
-      exerciseInterval: event.target.value
+      exerciseInterval: event.target.value,
     });
   }
 
@@ -100,7 +168,7 @@ class SettingsPage extends React.Component {
       // No setting exists, create new
       let newSetting = new Setting("exerciseInterval", "exerciseInterval", {
         label: "Exercise interval",
-        duration: this.state.exerciseInterval
+        duration: this.state.exerciseInterval,
       });
       await createSetting(newSetting);
 
@@ -133,9 +201,7 @@ class SettingsPage extends React.Component {
         "exercise-1",
         "Test",
         new Date(
-          moment()
-            .add(this.state.exerciseInterval, "minutes")
-            .toISOString()
+          moment().add(this.state.exerciseInterval, "minutes").toISOString()
         ),
         new Date(
           moment()
@@ -144,17 +210,16 @@ class SettingsPage extends React.Component {
             .toISOString()
         ),
         ["legs", "non-seated"],
-        {
-        },
+        {},
         { transitionsRequired: 5 },
-        { },
+        {},
         0
       );
       await createExercise(newExercise);
 
       await requestNotificationPermission();
       this.props.dispatch({
-        type: "SETTINGS_CREATED"
+        type: "SETTINGS_CREATED",
       });
     } else {
       if (exerciseIntervalSetting.value !== this.state.exerciseInterval) {
@@ -170,7 +235,7 @@ class SettingsPage extends React.Component {
 
 const mapStateToProps = (state /*, ownProps*/) => {
   return {
-    app: state.app
+    app: state.app,
   };
 };
 
