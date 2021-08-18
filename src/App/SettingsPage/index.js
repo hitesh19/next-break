@@ -13,6 +13,8 @@ import {
   currentNotificationPermission,
   requestNotificationPermission,
 } from "../../Lib/notifier";
+import Switch from "@material-ui/core/Switch";
+import TextField from "@material-ui/core/TextField";
 
 class SettingsPage extends React.Component {
   constructor(props) {
@@ -67,25 +69,6 @@ class SettingsPage extends React.Component {
       );
     }
 
-    // return (
-    //   <div>
-    //     <h1>Settings Page</h1>
-    //     <div>
-    //       Welcome {this.props.app.userName} ! Configure settings below -
-    //     </div>
-    //     <br />
-    //     <div>
-    //       Exercise Interval (mins) :
-    //       <input
-    //         type="number"
-    //         value={this.state.exerciseInterval}
-    //         onChange={this.handleChange.bind(this)}
-    //       />
-    //       <button onClick={this.handleSubmit.bind(this)}>Save</button>
-    //     </div>
-    //   </div>
-    // );
-
     return (
       <div className="container">
         <div className="header">
@@ -97,24 +80,41 @@ class SettingsPage extends React.Component {
         </div>
         <div className="settings-area">
           <div className="setting-box">
-            <span>EXERCISE INTERVAL (mins) :</span>
-            <span>
-              <input
-                type="number"
-                value={this.state.exerciseInterval}
-                onChange={this.handleChange.bind(this)}
-              ></input>
-            </span>
+            <div className="setting-row">
+              <span>EXERCISE INTERVAL (mins) :</span>
+              <span>
+                <TextField
+                  type="number"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  style={{
+                    "marginLeft" : "10px"
+                  }}
+                  inputProps={{
+                    style: {
+                      width: "60px",
+                      "textAlign": "center",
+                      padding: "1px",
+                    }
+                  }}
+                  value={this.state.exerciseInterval}
+                  onChange={this.handleChange.bind(this)}
+                />
+              </span>
+            </div>
           </div>
           <div className="setting-box">
             <span>NOTIFICATIONS :</span>
+
             <span>
-              <input
-                name="notif-perm"
-                type="checkbox"
+              <Switch
                 checked={this.state.notifPerm}
                 onChange={this.handleNPToggle.bind(this)}
-              ></input>
+                name="otif-perm"
+                color="primary"
+                inputProps={{ "aria-label": "Notifications checkbox" }}
+              />
             </span>
           </div>
         </div>
@@ -138,7 +138,7 @@ class SettingsPage extends React.Component {
           notifPerm: true,
         });
       }
-    } else if (currentPerm === true){
+    } else if (currentPerm === true) {
       alert("Permission already granted");
     }
   }

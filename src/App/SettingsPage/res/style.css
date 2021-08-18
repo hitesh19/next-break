@@ -61,6 +61,12 @@
 .setting-box {
   margin-top: 20px;
 }
+.setting-row{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
 .actions {
   grid-area: actions;
   padding-left: 20px;

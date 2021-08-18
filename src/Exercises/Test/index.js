@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 // import { updateExercise } from "Lib/exercise";
 import * as posenet from '@tensorflow-models/posenet';
-import * as tf from '@tensorflow/tfjs';
+// import * as tf from '@tensorflow/tfjs';
 
 
 // const DURATION = 60000;
